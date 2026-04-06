@@ -1,0 +1,53 @@
+﻿@model IEnumerable<AcmeGlobalCollege.Models.Entities.StudentProfile>
+
+@{
+    ViewData["Title"] = "Course Students";
+    var courseId = ViewBag.CourseId;
+}
+
+<h2><i class="fas fa-users"></i> Students Enrolled</h2>
+<hr />
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Attendance Rate</th>
+                    <th>Current Grade</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in Model)
+                {
+                    <tr>
+                        <td>@student.StudentNumber</td>
+                        <td>@student.Name</td>
+                        <td>@student.Email</td>
+                        <td>@student.Phone</td>
+                        <td><span class="badge bg-info">Loading...</span></td>
+                        <td><span class="badge bg-success">Loading...</span></td>
+                        <td>
+                            <a asp-action="StudentContact" asp-route-studentId="@student.Id" class="btn btn-sm btn-info">
+                                <i class="fas fa-address-card"></i> Contact
+                            </a>
+                            <a asp-action="StudentGrades" asp-route-studentId="@student.Id" asp-route-courseId="@courseId" class="btn btn-sm btn-warning">
+                                <i class="fas fa-chart-line"></i> Grades
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">No students enrolled in this course.</div>
+}

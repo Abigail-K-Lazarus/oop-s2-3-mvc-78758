@@ -1,0 +1,147 @@
+﻿@model AcmeGlobalCollege.Models.ViewModels.StudentDashboardViewModel
+
+@{
+    ViewData["Title"] = "My Grades";
+}
+
+<h2><i class="fas fa-chart-line"></i> My Academic Progress</h2>
+<hr />
+
+@if (Model.CurrentEnrolments.Any())
+{
+    <div class="row">
+        @foreach (var enrolment in Model.CurrentEnrolments)
+        {
+            var courseProgress = Model.CourseProgress.ContainsKey(enrolment.CourseId) ? Model.CourseProgress[enrolment.CourseId] : 0;
+            var courseAttendance = await GetCourseAttendanceAsync(enrolment.CourseId, Model.Student.Id);
+
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5>@enrolment.Course.Code - @enrolment.Course.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Course Progress</h6>
+                                <div class="progress mb-3" style="height: 25px;">
+                                    <div class="progress-bar bg-success" style="width: @courseProgress%">
+                                        @courseProgress.ToString("F1")%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Attendance Rate</h6>
+                                <div class="progress mb-3" style="height: 25px;">
+                                    <div class="progress-bar @(courseAttendance >= 75 ? "bg-info" : courseAttendance >= 50 ? "bg-warning" : "bg-danger")"
+                                         style="width: @courseAttendance%">
+                                        @courseAttendance.ToString("F1")%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="mt-3">Assignment Results</h6>
+                        @{
+                            var assignmentResults = Model.AssignmentResults
+                            .Where(ar => ar.Assignment.CourseId == enrolment.CourseId)
+                            .ToList();
+                        }
+                        @if (assignmentResults.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Assignment</th>
+                                            <th>Score</th>
+                                            <th>Max Score</th>
+                                            <th>Percentage</th>
+                                            <th>Feedback</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var result in assignmentResults)
+                                        {
+                                            var percentage = (decimal)result.Score / result.Assignment.MaxScore * 100;
+                                            <tr>
+                                                <td>@result.Assignment.Title</td>
+                                                <td>@result.Score</td>
+                                                <td>@result.Assignment.MaxScore</td>
+                                                <td>
+                                                    <span class="badge @(percentage >= 70 ? "bg-success" : percentage >= 50 ? "bg-warning" : "bg-danger")">
+                                                        @percentage.ToString("F1")%
+                                                    </span>
+                                                </td>
+                                                <td>@(result.Feedback ?? "-")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No assignment results available yet.</p>
+                        }
+
+                        <h6 class="mt-3">Exam Results</h6>
+                        @{
+                            var examResults = Model.ReleasedExamResults
+                            .Where(er => er.Exam.CourseId == enrolment.CourseId)
+                            .ToList();
+                        }
+                        @if (examResults.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Exam</th>
+                                            <th>Score</th>
+                                            <th>Max Score</th>
+                                            <th>Percentage</th>
+                                            <th>Grade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var result in examResults)
+                                        {
+                                            var percentage = (decimal)result.Score / result.Exam.MaxScore * 100;
+                                            <tr>
+                                                <td>@result.Exam.Title</td>
+                                                <td>@result.Score</td>
+                                                <td>@result.Exam.MaxScore</td>
+                                                <td>@percentage.ToString("F1")%</td>
+                                                <td><span class="badge bg-info">@result.Grade</span></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No exam results released yet.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> You are not enrolled in any courses.
+    </div>
+}
+
+@functions {
+    async Task<decimal> GetCourseAttendanceAsync(int courseId, int studentId)
+    {
+        // This would need to be passed from controller or use a service
+        // For now, return a placeholder
+        return 85.5m;
+    }
+}

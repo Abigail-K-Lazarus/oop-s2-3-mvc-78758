@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center">
+    <div class="jumbotron bg-light p-5 rounded mb-4">
+        <h1 class="display-4">Welcome to Acme Global College</h1>
+        <p class="lead">Excellence in Education Across Ireland</p>
+        <hr class="my-4">
+        <p>Three branches in Dublin, Cork, and Galway offering quality education.</p>
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg">
+                <i class="fas fa-sign-in-alt"></i> Login to Portal
+            </a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-success btn-lg">
+                <i class="fas fa-user-plus"></i> Register as Student
+            </a>
+        }
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <i class="fas fa-graduation-cap fa-3x text-primary"></i>
+                    <h3>Quality Courses</h3>
+                    <p>Industry-relevant programs designed for success.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <i class="fas fa-chalkboard-user fa-3x text-success"></i>
+                    <h3>Expert Faculty</h3>
+                    <p>Learn from experienced professionals.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <i class="fas fa-laptop-code fa-3x text-info"></i>
+                    <h3>Modern Facilities</h3>
+                    <p>State-of-the-art learning environment.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

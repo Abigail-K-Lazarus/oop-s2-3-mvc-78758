@@ -1,0 +1,139 @@
+﻿@model AcmeGlobalCollege.Models.ViewModels.StudentDashboardViewModel
+
+@{
+    ViewData["Title"] = "Student Dashboard";
+}
+
+<div class="container">
+    <h2><i class="fas fa-tachometer-alt"></i> Welcome, @Model.Student.Name</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Current Courses</h5>
+                    <h2>@Model.CurrentEnrolments.Count</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Attendance Rate</h5>
+                    <h2>@Model.OverallAttendancePercentage.ToString("F1")%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Average Grade</h5>
+                    <h2>@(Model.CourseProgress.Values.Any() ? Model.CourseProgress.Values.Average().ToString("F1") : "N/A")%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Student ID</h5>
+                    <h6>@Model.Student.StudentNumber</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-book-open"></i> My Courses</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.CurrentEnrolments.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr><th>Course Code</th><th>Course Name</th><th>Progress</th><th>Action</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var enrolment in Model.CurrentEnrolments)
+                                {
+                                    <tr>
+                                        <td>@enrolment.Course.Code</td>
+                                        <td>@enrolment.Course.Name</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar" style="width: @(Model.CourseProgress.ContainsKey(enrolment.CourseId) ? Model.CourseProgress[enrolment.CourseId] : 0)%">
+                                                    @(Model.CourseProgress.ContainsKey(enrolment.CourseId) ? Model.CourseProgress[enrolment.CourseId].ToString("F0") : 0)%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><a asp-action="CourseDetails" asp-route-id="@enrolment.CourseId" class="btn btn-sm btn-info">View</a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No courses enrolled yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-calendar-check"></i> Recent Attendance</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentAttendance.Any())
+                    {
+                        <ul class="list-group">
+                            @foreach (var attendance in Model.RecentAttendance.Take(5))
+                            {
+                                <li class="list-group-item">
+                                    @attendance.Date.ToString("dd/MM/yyyy") -
+                                    @attendance.CourseEnrolment.Course.Name
+                                    <span class="badge @(attendance.IsPresent ? "bg-success" : "bg-danger") float-end">
+                                        @(attendance.IsPresent ? "Present" : "Absent")
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>No attendance records yet.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="fas fa-chart-line"></i> Recent Grades</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.ReleasedExamResults.Any())
+                    {
+                        <ul class="list-group">
+                            @foreach (var result in Model.ReleasedExamResults.Take(5))
+                            {
+                                <li class="list-group-item">
+                                    @result.Exam.Title - Score: @result.Score/@result.Exam.MaxScore
+                                    <span class="badge bg-info float-end">Grade: @result.Grade</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>No grades released yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

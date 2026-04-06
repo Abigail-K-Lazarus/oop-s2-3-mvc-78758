@@ -1,0 +1,37 @@
+﻿@model AcmeGlobalCollege.Models.Entities.Course
+
+@{
+    ViewData["Title"] = $"Course Details - {Model.Code}";
+}
+
+<h2><i class="fas fa-info-circle"></i> @Model.Code - @Model.Name</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5>Course Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Description:</strong> @(Model.Description ?? "No description available")</p>
+                <p><strong>Credits:</strong> @Model.Credits</p>
+                <p><strong>Duration:</strong> @Model.StartDate.ToString("dd/MM/yyyy") - @Model.EndDate.ToString("dd/MM/yyyy")</p>
+                <p><strong>Branch:</strong> @Model.Branch?.Name</p>
+                <p><strong>Max Capacity:</strong> @Model.MaxCapacity students</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5>Quick Stats</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Your Progress:</strong> Loading...</p>
+                <p><strong>Attendance:</strong> Loading...</p>
+            </div>
+        </div>
+    </div>
+</div>

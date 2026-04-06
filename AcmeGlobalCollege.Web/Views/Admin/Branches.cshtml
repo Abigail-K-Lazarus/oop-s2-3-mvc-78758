@@ -1,0 +1,63 @@
+﻿@model IEnumerable<AcmeGlobalCollege.Models.Entities.Branch>
+
+@{
+    ViewData["Title"] = "Manage Branches";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="fas fa-store"></i> Branches</h2>
+    <a asp-action="CreateBranch" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add Branch
+    </a>
+</div>
+<hr />
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var branch in Model)
+                {
+                    <tr>
+                        <td><strong>@branch.Name</strong></td>
+                        <td>@branch.Address</td>
+                        <td>@branch.Phone</td>
+                        <td>@branch.Email</td>
+                        <td>
+                            <a asp-action="EditBranch" asp-route-id="@branch.Id" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button onclick="deleteBranch(@branch.Id)" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">No branches found. Click "Add Branch" to create one.</div>
+}
+
+@section Scripts {
+    <script>
+        function deleteBranch(id) {
+            if (confirm('Are you sure you want to delete this branch?')) {
+                window.location.href = '/Admin/DeleteBranch/' + id;
+            }
+        }
+    </script>
+}

@@ -1,0 +1,122 @@
+﻿@model AcmeGlobalCollege.Models.ViewModels.GradebookViewModel
+
+@{
+    ViewData["Title"] = $"Gradebook - {Model.CourseName}";
+}
+
+<h2><i class="fas fa-book"></i> Gradebook: @Model.CourseName</h2>
+<hr />
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Student Name</th>
+                <th>Student ID</th>
+                <th>Contact</th>
+                @foreach (var assignment in Model.Students.FirstOrDefault()?.AssignmentGrades ?? new List<AcmeGlobalCollege.Models.ViewModels.AssignmentGradeViewModel>())
+                {
+                    <th>@assignment.AssignmentTitle<br /><small>Max: @assignment.MaxScore</small></th>
+                }
+                @foreach (var exam in Model.Students.FirstOrDefault()?.ExamGrades ?? new List<AcmeGlobalCollege.Models.ViewModels.ExamGradeViewModel>())
+                {
+                    <th>@exam.ExamTitle<br /><small>Max: @exam.MaxScore</small></th>
+                }
+                <th>Overall</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in Model.Students)
+            {
+                <tr>
+                    <td>@student.StudentName</td>
+                    <td>@student.StudentNumber</td>
+                    <td>
+                        <i class="fas fa-envelope"></i> @student.Email<br />
+                        <i class="fas fa-phone"></i> @student.Phone
+                    </td>
+                    @foreach (var assignment in student.AssignmentGrades)
+                    {
+                        <td>
+                            <input type="number" class="form-control grade-input assignment-grade"
+                                   data-assignmentid="@assignment.AssignmentId"
+                                   data-studentid="@student.StudentProfileId"
+                                   value="@assignment.Score"
+                                   max="@assignment.MaxScore"
+                                   style="width: 80px;" />
+                            <small>@assignment.Feedback</small>
+                        </td>
+                    }
+                    @foreach (var exam in student.ExamGrades)
+                    {
+                        <td>
+                            @if (exam.ResultsReleased)
+                            {
+                                <span class="badge bg-success">@exam.Score/@exam.MaxScore</span>
+                                <br />
+
+                                <small>Grade: @exam.Grade</small>
+                            }
+                            else
+                            {
+                                <input type="number" class="form-control exam-grade"
+                                       data-examid="@exam.ExamId"
+                                       data-studentid="@student.StudentProfileId"
+                                       value="@exam.Score"
+                                       max="@exam.MaxScore"
+                                       style="width: 80px;" />
+                            }
+                        </td>
+                    }
+                    <td><strong>@(student.OverallGrade?.ToString("F1") ?? "N/A")%</strong></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            
+            $('.assignment-grade').on('change', function() {
+                var input = $(this);
+                var assignmentId = input.data('assignmentid');
+                var studentId = input.data('studentid');
+                var score = input.val();
+                var feedback = input.closest('tr').find('.feedback-' + assignmentId).val() || '';
+
+                $.post('/Faculty/UpdateAssignmentResult', {
+                    assignmentId: assignmentId,
+                    studentId: studentId,
+                    score: score,
+                    feedback: feedback
+                }).done(function(response) {
+                    if (response.success) {
+                        input.css('border-color', 'green');
+                        setTimeout(function() { input.css('border-color', ''); }, 2000);
+                    }
+                });
+            });
+
+            
+            $('.exam-grade').on('change', function() {
+                var input = $(this);
+                var examId = input.data('examid');
+                var studentId = input.data('studentid');
+                var score = input.val();
+
+                $.post('/Faculty/UpdateExamResult', {
+                    examId: examId,
+                    studentId: studentId,
+                    score: score
+                }).done(function(response) {
+                    if (response.success) {
+                        input.css('border-color', 'green');
+                        setTimeout(function() { input.css('border-color', ''); }, 2000);
+                    }
+                });
+            });
+        });
+    </script>
+}

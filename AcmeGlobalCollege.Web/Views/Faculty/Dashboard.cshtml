@@ -1,0 +1,45 @@
+﻿@model IEnumerable<AcmeGlobalCollege.Models.Entities.Course>
+
+@{
+    ViewData["Title"] = "Faculty Dashboard";
+}
+
+<h2><i class="fas fa-tachometer-alt"></i> Faculty Dashboard</h2>
+<hr />
+
+<h4>My Courses</h4>
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var course in Model)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5>@course.Code - @course.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Branch:</strong> @course.Branch?.Name</p>
+                        <p><strong>Students:</strong> <span id="studentCount-@course.Id">Loading...</span></p>
+                        <div class="btn-group">
+                            <a asp-action="Gradebook" asp-route-courseId="@course.Id" class="btn btn-info btn-sm">
+                                <i class="fas fa-book"></i> Gradebook
+                            </a>
+                            <a asp-action="CourseStudents" asp-route-courseId="@course.Id" class="btn btn-success btn-sm">
+                                <i class="fas fa-users"></i> Students
+                            </a>
+                            <a asp-action="CourseAttendance" asp-route-courseId="@course.Id" class="btn btn-warning btn-sm">
+                                <i class="fas fa-calendar-check"></i> Attendance
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">No courses assigned yet.</div>
+}

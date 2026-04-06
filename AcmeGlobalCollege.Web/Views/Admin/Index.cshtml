@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container">
+    <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total Students</h5>
+                    <h2>@ViewBag.TotalStudents</h2>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Students" class="text-white">View Details →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Total Courses</h5>
+                    <h2>@ViewBag.TotalCourses</h2>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Courses" class="text-white">View Details →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Total Branches</h5>
+                    <h2>@ViewBag.TotalBranches</h2>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Branches" class="text-white">View Details →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Total Faculty</h5>
+                    <h2>@ViewBag.TotalFaculty</h2>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Faculties" class="text-white">View Details →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5><i class="fas fa-tasks"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a asp-action="CreateCourse" class="list-group-item list-group-item-action">
+                            <i class="fas fa-plus-circle text-success"></i> Add New Course
+                        </a>
+                        <a asp-action="CreateBranch" class="list-group-item list-group-item-action">
+                            <i class="fas fa-plus-circle text-success"></i> Add New Branch
+                        </a>
+                        <a asp-action="CreateFaculty" class="list-group-item list-group-item-action">
+                            <i class="fas fa-user-plus text-success"></i> Add New Faculty
+                        </a>
+                        <a asp-action="CreateAssignment" class="list-group-item list-group-item-action">
+                            <i class="fas fa-tasks text-success"></i> Create Assignment
+                        </a>
+                        <a asp-action="CreateExam" class="list-group-item list-group-item-action">
+                            <i class="fas fa-file-alt text-success"></i> Create Exam
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5><i class="fas fa-chart-line"></i> System Status</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>System Version:</strong> 1.0</p>
+                    <p><strong>Last Backup:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p><strong>Database Status:</strong> <span class="badge bg-success">Connected</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,126 @@
+﻿@model IEnumerable<AcmeGlobalCollege.Models.Entities.StudentProfile>
+@using AcmeGlobalCollege.Helpers
+@{
+    ViewData["Title"] = "Course Attendance";
+    var courseId = ViewBag.CourseId;
+    var currentWeek = ViewBag.CurrentWeek ?? DateTime.Now.GetWeekOfMonth();
+}
+
+<h2><i class="fas fa-calendar-check"></i> Attendance Tracking</h2>
+<hr />
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <label class="form-label">Select Week:</label>
+        <select id="weekSelect" class="form-select">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i" selected="@(i == currentWeek ? "selected" : null)">
+                    Week @i
+                </option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Date:</label>
+        <input type="date" id="attendanceDate" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="col-md-4">
+        <button id="saveAllAttendance" class="btn btn-success mt-4">
+            <i class="fas fa-save"></i> Save All Changes
+        </button>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover" id="attendanceTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Student Name</th>
+                    <th>Student ID</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in Model)
+                {
+                    <tr data-studentid="@student.Id">
+                        <td>@student.Name</td>
+                        <td>@student.StudentNumber</td>
+                        <td>
+                            <select class="form-select attendance-status" style="width: 120px;">
+                                <option value="true">Present</option>
+                                <option value="false">Absent</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control attendance-notes" placeholder="Optional notes" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">No students enrolled in this course.</div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            
+            function loadAttendance() {
+                var week = $('#weekSelect').val();
+                var courseId = @courseId;
+
+                $.get('/Faculty/GetAttendanceByWeek', { courseId: courseId, weekNumber: week }, function(data) {
+                    if (data) {
+                        $.each(data, function(studentId, attendance) {
+                            var row = $(`tr[data-studentid='${studentId}']`);
+                            row.find('.attendance-status').val(attendance.isPresent.toString());
+                            row.find('.attendance-notes').val(attendance.notes || '');
+                        });
+                    }
+                });
+            }
+
+            
+            $('#saveAllAttendance').click(function() {
+                var week = $('#weekSelect').val();
+                var date = $('#attendanceDate').val();
+                var courseId = @courseId;
+                var records = [];
+
+                $('#attendanceTable tbody tr').each(function() {
+                    var studentId = $(this).data('studentid');
+                    var isPresent = $(this).find('.attendance-status').val() === 'true';
+                    var notes = $(this).find('.attendance-notes').val();
+
+                    records.push({
+                        studentId: studentId,
+                        courseId: courseId,
+                        weekNumber: week,
+                        date: date,
+                        isPresent: isPresent,
+                        notes: notes
+                    });
+                });
+
+                $.post('/Faculty/SaveAttendance', { records: records }, function(response) {
+                    if (response.success) {
+                        alert('Attendance saved successfully!');
+                    } else {
+                        alert('Error saving attendance');
+                    }
+                });
+            });
+
+            $('#weekSelect').change(loadAttendance);
+        });
+    </script>
+}

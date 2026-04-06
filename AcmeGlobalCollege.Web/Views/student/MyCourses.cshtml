@@ -1,0 +1,40 @@
+﻿@model IEnumerable<AcmeGlobalCollege.Models.Entities.CourseEnrolment>
+
+@{
+    ViewData["Title"] = "My Courses";
+}
+
+<h2><i class="fas fa-book-open"></i> My Courses</h2>
+<hr />
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var enrolment in Model)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5>@enrolment.Course.Code - @enrolment.Course.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Branch:</strong> @enrolment.Course.Branch?.Name</p>
+                        <p><strong>Duration:</strong> @enrolment.Course.StartDate.ToString("dd/MM/yyyy") - @enrolment.Course.EndDate.ToString("dd/MM/yyyy")</p>
+                        <p><strong>Status:</strong> <span class="badge bg-success">@enrolment.Status</span></p>
+                        @if (enrolment.FinalGrade.HasValue)
+                        {
+                            <p><strong>Final Grade:</strong> @enrolment.FinalGrade.Value.ToString("F1")%</p>
+                        }
+                        <a asp-action="CourseDetails" asp-route-id="@enrolment.CourseId" class="btn btn-info btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <p>You are not enrolled in any courses yet. Please contact the admin.</p>
+    </div>
+}
